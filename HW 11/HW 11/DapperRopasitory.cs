@@ -1,151 +1,166 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using Dapper;
-//using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
-using System.Numerics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Data.SqlTypes;
-using System.Security.Principal;
-using Microsoft.VisualBasic.FileIO;
-using System.Diagnostics;
+using Dapper;
+using Microsoft.Data.SqlClient;
 
+namespace HW_11;
 
-namespace HW_11
+public class DapperRopasitory
 {
-    public class DapperRopasitory
+    private string connectionstrting = "Data Source=DESKTOP-6RE5DJR\\SQLEXPRESS;Initial Catalog=ShopDb; User Id=sa; password=arminpooma00; TrustServerCertificate=True;Integrated Security=false;";
+
+
+    public void AddProduct(int id, string name, int price, int categoryId)
     {
-        string connectionstrting = @"Data Source=DESKTOP-6RE5DJR\SQLEXPRESS;Initial Catalog=ShopDb;Integrated Security=True;TrustServerCertificate=True;";
-        public bool AddProduct(string modelname, int price,int categoryId)
+        using (var connection = new SqlConnection(connectionstrting))
         {
-            try
+            var sql = @"INSERT INTO ShopDb.dbo.Products (Id,Name, Price, CategoryId) VALUES (@id,@Name, @Price, @CategoryId)";
+            var parameters = new
             {
-                using (var cn = new SqlConnection(connectionstrting))
-                {
-                    string sql = $"select * from ShopDb.dbo.Products where Name=@name";
-                    var command = new CommandDefinition(sql, new { name = modelname });
-                    var result = cn.QueryFirstOrDefault<Products>(command);
-                    if (result is not null)
-                    {
-                        Console.WriteLine("This username is alrady taken");
-                        return false;
-                    }
-                    else
-                    {
-                        string newsql = "INSERT INTO ShopDb.dbo.Products(Name, Price,CategoryId) VALUES (@N,@P,@C)";
-                        var newcommand = new CommandDefinition(newsql, new { N = modelname, P = price, C = categoryId });
-                        cn.Execute(newcommand);
-                        return true;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-
-                throw new Exception("Something went wrong! Please try again");
-            }
-
+                Id = id,
+                Name = name,
+                Price = price,
+                CategoryId = categoryId
+            };
+            var cmd = new CommandDefinition(sql, parameters);
+            connection.Execute(cmd);
         }
-        public List<Products> GetAllProducts()
+    }
+
+
+
+    //public List<Products> GetAllProducts()
+    //{
+    //    using SqlConnection cn = new SqlConnection(connectionstrting);
+    //    string sql = "SELECT p.name AS product_name, c.name AS category_name FROM ShopDb.dbo.Products p JOIN ShopDb.dbo.Categories c ON p.CategoryId = c.Id";
+    //    CommandDefinition cmd = new CommandDefinition(sql);
+    //    IEnumerable<Products> result = cn.Query<Products>(cmd);
+    //    return result.ToList();
+    //}
+
+    public List<Products> GetAllProducts()
+    {
+        using (SqlConnection connection = new SqlConnection(connectionstrting))
         {
-            using var cn = new SqlConnection(connectionstrting);
-            var sql = $"select p.name as product_name, c.name as category_name from ShopDb.dbo.Products p join ShopDb.dbo.Categories c on p.CategoryId=c.Id";
+            string sql = "SELECT Id, Name, Price, CategoryId FROM ShopDb.dbo.Products";
             var cmd = new CommandDefinition(sql);
-            var result = cn.Query<Products>(cmd);
+            var result = connection.Query<Products>(cmd);
             return result.ToList();
         }
-        public List<Products> Search(int productId)
+
+
+    }
+
+    public void Search(int productId)
+    {
+        using (var connection = new SqlConnection(connectionstrting))
         {
-            string sql = $"select * from ShopDb.dbo.Products where Id=@productId";
-            using var cn = new SqlConnection(connectionstrting);
-            var command = new CommandDefinition(sql, new { productId = productId });
-            var result = cn.Query<Products>(command);
-            return result.ToList();
-        }
-        public bool EditProductInfo(int productId, int price, string newname,int categoryid,int option)
-        {
-            try
+
+            var sql = "SELECT * FROM ShopDb.dbo.Products WHERE Id = @Id";
+            var command = new CommandDefinition(sql, new { Id = productId });
+            var product = connection.QueryFirstOrDefault<Products>(command);
+
+            if (product != null)
             {
-                string sql = $"select * from ShopDb.dbo.Products where Id = @id ";
-                using (var cn = new SqlConnection(connectionstrting))
-                {
-                    var command = new CommandDefinition(sql, new { id = productId });
-                    var result = cn.QueryFirstOrDefault<string>(command);
-                    if (result is null)
-                    {
-                        Console.WriteLine("There is no product with this information");
-                        return false;
-                    }
-                    else
-                    {
-                        if (option==1)
-                        {
-                            string newsql = $"Update ShopDb.dbo.Products set Price = @newprice where Id = @id";
-                            var Updatecommand = new CommandDefinition(newsql, new { newprice = price,id = productId});
-                            cn.Execute(Updatecommand);
-                            return true;
-                        }
-                        else if (option==2)
-                        {
-                            string newsql = $"Update ShopDb.dbo.Products set Name = @newname where Id = @id";
-                            var Updatecommand = new CommandDefinition(newsql, new { newname = newname , id = productId });
-                            cn.Execute(Updatecommand);
-                            return true;
-                        }
-                        else
-                        {
-                            string newsql = $"Update ShopDb.dbo.Products set CategoryId = @newcategoryid where Id = @id";
-                            var Updatecommand = new CommandDefinition(newsql, new { newcategoryid = categoryid, id = productId });
-                            cn.Execute(Updatecommand);
-                            return true;
-                        }
-                        
-                    }
-
-                }
-
+                Console.WriteLine($"Product ID: {product.Id}");
+                Console.WriteLine($"Name: {product.Name}");
+                Console.WriteLine($"Price: {product.Price}");
+                Console.WriteLine($"Category ID: {product.CategoryId}");
             }
-            catch (Exception)
+            else
             {
-
-                throw new Exception("Oop.... Something went wrong!");
+                Console.WriteLine("Product not found.");
             }
         }
-        public bool DeleteProduct(int productId)
+    }
+
+
+    //public bool EditProductInfo(int productId, int price, string newname, int categoryid, int option)
+    //{
+    //    try
+    //    {
+    //        string sql = "select * from ShopDb.dbo.Products where Id = @id ";
+    //        using SqlConnection cn = new SqlConnection(connectionstrting);
+    //        CommandDefinition command = new CommandDefinition(sql, new
+    //        {
+    //            id = productId
+    //        });
+    //        string result = cn.QueryFirstOrDefault<string>(command);
+    //        if (result == null)
+    //        {
+    //            Console.WriteLine("There is no product with this information");
+    //            return false;
+    //        }
+    //        switch (option)
+    //        {
+    //            case 1:
+    //                {
+    //                    string newsql = "Update ShopDb.dbo.Products set Price = @newprice where Id = @id";
+    //                    CommandDefinition Updatecommand2 = new CommandDefinition(newsql, new
+    //                    {
+    //                        newprice = price,
+    //                        id = productId
+    //                    });
+    //                    cn.Execute(Updatecommand2);
+    //                    return true;
+    //                }
+    //            case 2:
+    //                {
+    //                    string newsql3 = "Update ShopDb.dbo.Products set Name = @newname where Id = @id";
+    //                    CommandDefinition Updatecommand3 = new CommandDefinition(newsql3, new
+    //                    {
+    //                        newname = newname,
+    //                        id = productId
+    //                    });
+    //                    cn.Execute(Updatecommand3);
+    //                    return true;
+    //                }
+    //            default:
+    //                {
+    //                    string newsql2 = "Update ShopDb.dbo.Products set CategoryId = @newcategoryid where Id = @id";
+    //                    CommandDefinition Updatecommand = new CommandDefinition(newsql2, new
+    //                    {
+    //                        newcategoryid = categoryid,
+    //                        id = productId
+    //                    });
+    //                    cn.Execute(Updatecommand);
+    //                    return true;
+    //                }
+    //        }
+    //    }
+    //    catch (Exception)
+    //    {
+    //        throw new Exception("Oop.... Something went wrong!");
+    //    }
+    //}
+    public void EditProductInfo(int id, string name, int price, int categoryId)
+    {
+        using (var connection = new SqlConnection(connectionstrting))
         {
-            try
-            {
-                string sql = $"select * from ShopDb.dbo.Products where Id = @id ";
-                using (var cn = new SqlConnection(connectionstrting))
-                {
-                    var command = new CommandDefinition(sql, new { id = productId });
-                    var result = cn.QueryFirstOrDefault<string>(command);
-                    if (result is null)
-                    {
-                        Console.WriteLine("There is no product with this information");
-                        return false;
-                    }
-                    else
-                    {
-                            string newsql = $"delete from ShopDb.dbo.Products where Id = @id";
-                            var Updatecommand = new CommandDefinition(newsql, new { id = productId });
-                            cn.Execute(Updatecommand);
-                            return true;
-                    }
-
-                }
-
-            }
-            catch (Exception)
-            {
-
-                throw new Exception("Oop.... Something went wrong!");
-            }
+            var sql = @"UPDATE ShopDb.dbo.Products SET Name = @Name, Price = @Price, CategoryId = @CategoryId WHERE Id = @Id";
+            var command = new CommandDefinition(sql, new { Id = id, Name = name, Price = price, CategoryId = categoryId });
+            var affectedRows = connection.Execute(command);
+            Console.WriteLine("Done");
         }
- //Queries:
-// --(1)-----------------------------------------------------------------------------
+    }
+
+
+    public void DeleteProduct(int id)
+    {
+        
+        using (var connection = new SqlConnection(connectionstrting))
+        {
+            var sql = "DELETE FROM ShopDb.dbo.Products WHERE Id = @Id";
+            var command = new CommandDefinition(sql, new { Id = id });
+            var affectedRows = connection.Execute(command);
+            Console.WriteLine("Done");
+        }
+    }
+    //Quesries
+//    --(1)-----------------------------------------------------------------------------
 //--select* from ShopDb.dbo.Products where Price >=500;
 //--(2)-----------------------------------------------------------------------------
 //--select YEAR(orderdate) as Order_year,SUM(totalamount) as total_amount from ShopDb.dbo.Orders group by YEAR(OrderDate) order by Order_year
@@ -201,5 +216,4 @@ namespace HW_11
 //--join ShopDb.dbo.Categories c on p.CategoryId = c.id
 //--group by p.Name
 //--order by customer_count desc
-    }
 }
