@@ -1,0 +1,5 @@
+C:\Users\Tamadoni\OneDrive\Desktop\برنامه نویسی\تکالیف\HW - week 11\HW 11\HW 11\obj\Debug\net8.0\HW 11.csproj.AssemblyReference.cache
+C:\Users\Tamadoni\OneDrive\Desktop\برنامه نویسی\تکالیف\HW - week 11\HW 11\HW 11\obj\Debug\net8.0\HW 11.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Tamadoni\OneDrive\Desktop\برنامه نویسی\تکالیف\HW - week 11\HW 11\HW 11\obj\Debug\net8.0\HW 11.AssemblyInfoInputs.cache
+C:\Users\Tamadoni\OneDrive\Desktop\برنامه نویسی\تکالیف\HW - week 11\HW 11\HW 11\obj\Debug\net8.0\HW 11.AssemblyInfo.cs
+C:\Users\Tamadoni\OneDrive\Desktop\برنامه نویسی\تکالیف\HW - week 11\HW 11\HW 11\obj\Debug\net8.0\HW 11.csproj.CoreCompileInputs.cache

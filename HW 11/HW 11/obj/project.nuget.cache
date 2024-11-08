@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "dx889GFvl05AIcD9l8oDMoe1pSIPf0KY3CiIei0XzqzEGXT48wHxPnrd3Hx5SRRSa0Xos1XqjS10NmKxuy5Arg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Tamadoni\\OneDrive\\Desktop\\برنامه نویسی\\تکالیف\\HW - week 11\\HW 11\\HW 11\\HW 11.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Tamadoni\\.nuget\\packages\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",
+    "C:\\Users\\Tamadoni\\.nuget\\packages\\dapper.sqlbuilder\\2.0.78\\dapper.sqlbuilder.2.0.78.nupkg.sha512"
+  ],
+  "logs": []
+}
